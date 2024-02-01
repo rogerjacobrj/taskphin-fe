@@ -1,39 +1,34 @@
 import CandidateTable from './components/table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import customAxios from '../../configs';
 import Modal from './components/modal';
 import "./styles.css";
 
 const Home = () => {
     const [showModal, setShowModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [candidates, setCandidates] = useState([
-        { id: 1, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 2, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 3, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 4, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 5, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 6, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 7, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 8, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 9, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 10, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 11, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 12, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 13, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 14, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 15, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 16, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 17, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 18, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 19, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 20, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 21, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 22, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 23, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 24, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 25, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-        { id: 26, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', status: 'Rejected', salary: '3000', experience: '3 years' },
-    ]);
+    const [candidates, setCandidates] = useState([]);
+
+    useEffect(() => {
+        fetchCandidates(true);
+    }, []);
+
+    const fetchCandidates = async (isInitial = false) => {
+        isInitial && setIsLoading(true);
+
+        try {
+            const response = await customAxios.get('/candidates');
+            if (response && response.status >= 200 && response.status < 300) {
+                setCandidates(response.data.data);
+            }
+
+            isInitial && setIsLoading(false);
+        } catch (error) {
+            console.log(error);
+            isInitial && setIsLoading(false);
+        }
+    };
 
     const handleEdit = (id) => {
         // Implement edit functionality
@@ -47,6 +42,13 @@ const Home = () => {
 
     const toggleCandidateModal = () => {
         setShowModal(!showModal);
+    };
+
+    const onCreate = (status) => {
+        if (status) {
+            toggleCandidateModal();
+            fetchCandidates(false);
+        }
     };
 
     return (
@@ -111,8 +113,13 @@ const Home = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onAdd={toggleCandidateModal}
+                isLoading={isLoading}
             />
-            {showModal && <Modal onClose={toggleCandidateModal} />}
+
+            {showModal && <Modal
+                onCreate={onCreate}
+                onClose={toggleCandidateModal}
+            />}
         </div>
     );
 };

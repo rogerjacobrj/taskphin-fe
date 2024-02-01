@@ -10,7 +10,6 @@ const SkillItem = (props) => {
         <>
             <div className="skill-item flex space-x-4 items-center w-100 justify-between">
                 <div>
-
                     <Input
                         type="text"
                         placeholder="Enter skill"

@@ -13,9 +13,9 @@ const SelectInput = (props) => {
             <Select
                 id={id}
                 options={options && options.map(item => {
-                    return { label: item, value: item }
+                    return { label: item.title, value: item.value }
                 })}
-                value={value}
+                // value={value}
                 onChange={(selectedOption) => handleChange(field, selectedOption)}
                 isMulti={isMulti}
                 className="react-select-container"

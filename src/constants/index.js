@@ -1,5 +1,9 @@
 export const status = [
-    "Contacted", "Interview Scheduled", "Offer Extended", "Hired", "Rejected"
+    { title: "Contacted", value: "Contacted" },
+    { title: "Interview Scheduled", value: "Interview Scheduled" },
+    { title: "Offer Extended", value: "Offer Extended" },
+    { title: "Hired", value: "Hired" },
+    { title: "Rejected", value: "Rejected" }
 ];
 
 export const skills = [
@@ -10,5 +14,7 @@ export const skills = [
 ];
 
 export const experience = [
-    "Less than 1 year", "1-2 years", "Over 2 years"
-]
+    { title: "Less than 1 year", value: "<1" },
+    { title: "1-2 years", value: "1-2" },
+    { title: "Over 2 years", value: ">2" }
+];

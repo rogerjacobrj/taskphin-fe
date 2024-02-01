@@ -1,21 +1,23 @@
-// FormPage.js
 import { useState } from 'react';
 import Input from './input';
 import SelectInput from './select';
 import { skills, status, experience } from '../../../../constants';
 import SkillItem from './skillItem';
 import PropTypes from 'prop-types';
+import customAxios from '../../../../configs';
 
 const FormPage = (props) => {
 
-    const { onClose } = props;
+    const { onClose, onCreate } = props;
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         phone: '',
         salary: '',
-        applicationStatus: null,
+        applicationStatus: '',
     });
 
     const [formErrors, setFormErrors] = useState({
@@ -38,40 +40,69 @@ const FormPage = (props) => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // Handle form submission logic here
         // Simple validation
         let isValid = true;
         const newFormErrors = {};
 
-        // Validate Name
-        if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
-            isValid = false;
-            newFormErrors.name = 'Name should only contain letters and spaces';
-        }
+        // // Validate Name
+        // if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
+        //     isValid = false;
+        //     newFormErrors.name = 'Name should only contain letters and spaces';
+        // }
 
-        // Validate Email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(formData.email.trim())) {
-            isValid = false;
-            newFormErrors.email = 'Enter a valid email address';
-        }
+        // // Validate Email
+        // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // if (!emailRegex.test(formData.email.trim())) {
+        //     isValid = false;
+        //     newFormErrors.email = 'Enter a valid email address';
+        // }
 
-        // Validate Phone (Allow only numbers)
-        if (!/^\d+$/.test(formData.phone.trim())) {
-            isValid = false;
-            newFormErrors.phone = 'Phone should only contain numbers';
-        }
+        // // Validate Phone (Allow only numbers)
+        // if (!/^\d+$/.test(formData.phone.trim())) {
+        //     isValid = false;
+        //     newFormErrors.phone = 'Phone should only contain numbers';
+        // }
 
-        // Set errors and prevent form submission if validation fails
-        if (!isValid) {
-            setFormErrors(newFormErrors);
-            return;
-        }
+        // // Set errors and prevent form submission if validation fails
+        // if (!isValid) {
+        //     setFormErrors(newFormErrors);
+        //     return;
+        // }
 
         // Handle form submission logic here
         console.log('Form submitted:', formData);
+        try {
+            const payload = {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                salary: formData.salary,
+                status: formData.applicationStatus.value,
+                skills: {
+                    react: formData.react.value,
+                    node: formData.node.value,
+                }
+            }
+
+            setIsLoading(true);
+            const response = await customAxios.post('/candidates', payload);
+            console.log("response", response);
+
+            if (response && response.status >= 200 && response.status < 300) {
+                onCreate(true);
+                setIsLoading(false);
+            } else {
+                onCreate(false);
+                setIsLoading(false);
+            }
+        } catch (error) {
+            console.log("Error", error);
+            onCreate(false);
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -122,7 +153,7 @@ const FormPage = (props) => {
                         id="applicationStatus"
                         field="applicationStatus"
                         options={status}
-                        value={formData.applicationStatus}
+                        value={formData.applicationStatus.value}
                         handleChange={handleChange}
                         error={formErrors.applicationStatus}
                         isMulti={false}
@@ -161,13 +192,13 @@ const FormPage = (props) => {
                     type="submit"
                     className="w-40 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
                     onClick={handleSubmit}>
-                    Submit
+                    {isLoading ? "Adding..." : "Add Candidate"}
                 </button>
+
                 <button
                     type="button"
                     className="ml-3 bg-gray-300 text-gray-800 px-4 py-2 rounded-md mr-2"
-                    onClick={onClose}
-                >
+                    onClick={onClose}>
                     Cancel
                 </button>
             </form>
@@ -177,6 +208,7 @@ const FormPage = (props) => {
 
 FormPage.propTypes = {
     onClose: PropTypes.func,
+    onCreate: PropTypes.func,
 };
 
 export default FormPage;
