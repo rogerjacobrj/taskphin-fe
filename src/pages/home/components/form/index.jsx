@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Input from './input';
 import SelectInput from './select';
 import { skills, status, experience } from '../../../../constants';
@@ -8,7 +8,8 @@ import customAxios from '../../../../configs';
 
 const FormPage = (props) => {
 
-    const { onClose, onCreate } = props;
+    const { onClose, onCreate, candidate, mode } = props;
+    console.log(candidate);
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -17,21 +18,34 @@ const FormPage = (props) => {
         email: '',
         phone: '',
         salary: '',
-        applicationStatus: '',
+        status: '',
+        skills: {}
     });
 
     const [formErrors, setFormErrors] = useState({
         name: '',
         email: '',
         phone: '',
-        applicationStatus: ''
+        status: ''
     });
 
     const handleChange = (field, value) => {
-        setFormData({
-            ...formData,
-            [field]: value,
-        });
+        if (field === "react" || field === "node") {
+            const skills = {
+                ...formData.skills,
+                [field]: value.value,
+            };
+
+            setFormData({
+                ...formData,
+                skills
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [field]: value,
+            });
+        }
 
         // Clear the error message when the user starts typing
         setFormErrors({
@@ -80,16 +94,22 @@ const FormPage = (props) => {
                 email: formData.email,
                 phone: formData.phone,
                 salary: formData.salary,
-                status: formData.applicationStatus.value,
+                status: formData.status.value,
                 skills: {
-                    react: formData.react.value,
-                    node: formData.node.value,
+                    react: formData.skills.react,
+                    node: formData.skills.node
                 }
-            }
+            };
 
             setIsLoading(true);
-            const response = await customAxios.post('/candidates', payload);
-            console.log("response", response);
+
+            let response = '';
+
+            if (mode === "create") {
+                response = await customAxios.post('/candidates', payload);
+            } else {
+                response = await customAxios.put(`/candidates/${candidate[0].candidateid}`);
+            }
 
             if (response && response.status >= 200 && response.status < 300) {
                 onCreate(true);
@@ -104,6 +124,19 @@ const FormPage = (props) => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (candidate && candidate.length > 0) {
+            const candidateStatus = status.find(item => item.value === candidate[0].status);
+
+            const data = {
+                ...candidate[0],
+                status: candidateStatus,
+            };
+
+            setFormData(data);
+        }
+    }, [candidate]);
 
     return (
         <div className="add-candidate container mx-auto mt-8">
@@ -150,12 +183,12 @@ const FormPage = (props) => {
                 <div className="mb-4">
                     <SelectInput
                         label="Status"
-                        id="applicationStatus"
-                        field="applicationStatus"
+                        id="status"
+                        field="status"
                         options={status}
-                        value={formData.applicationStatus.value}
+                        value={Object.keys(formData.status).length > 0 ? formData.status : ''}
                         handleChange={handleChange}
-                        error={formErrors.applicationStatus}
+                        error={formErrors.status}
                         isMulti={false}
                     />
                 </div>
@@ -166,10 +199,11 @@ const FormPage = (props) => {
                     {skills && skills.map(item => {
                         return <div className='flex space-x-4 mb-3' key={item.field}>
                             <SkillItem
-                                skillName={item.title}
+                                skillName={item.label}
                                 field={item.field}
                                 options={experience}
                                 handleChange={handleChange}
+                                value={formData && formData.skills ? formData.skills[item.field] : {}}
                             />
                         </div>
                     })}
@@ -188,12 +222,19 @@ const FormPage = (props) => {
                     />
                 </div>
 
-                <button
+                {mode === "create" && <button
                     type="submit"
                     className="w-40 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
                     onClick={handleSubmit}>
                     {isLoading ? "Adding..." : "Add Candidate"}
-                </button>
+                </button>}
+
+                {mode === "edit" && <button
+                    type="submit"
+                    className="w-40 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                    onClick={handleSubmit}>
+                    {isLoading ? "Saving..." : "Save"}
+                </button>}
 
                 <button
                     type="button"
@@ -207,8 +248,10 @@ const FormPage = (props) => {
 };
 
 FormPage.propTypes = {
+    candidate: PropTypes.array,
     onClose: PropTypes.func,
     onCreate: PropTypes.func,
+    mode: PropTypes.string,
 };
 
 export default FormPage;

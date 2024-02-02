@@ -1,10 +1,20 @@
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import SelectInput from './select';
 import Input from './input';
+import { experience } from '../../../../constants';
 
 const SkillItem = (props) => {
+    const [selectOption, setSelectOption] = useState('');
 
-    const { id, field, value, handleChange, skillName, options } = props;
+    const { id, field, handleChange, skillName, options, value } = props;
+
+    useEffect(() => {
+        if (value && value.length > 0) {
+            const option = experience.find(item => item.value === value);
+            setSelectOption(option);
+        }
+    }, [value]);
 
     return (
         <>
@@ -22,7 +32,7 @@ const SkillItem = (props) => {
                     id={id}
                     field={field}
                     options={options}
-                    value={value}
+                    value={selectOption}
                     handleChange={handleChange}
                     isMulti={false}
                 />
@@ -34,10 +44,11 @@ const SkillItem = (props) => {
 SkillItem.propTypes = {
     id: PropTypes.string,
     field: PropTypes.string,
-    value: PropTypes.string,
     handleChange: PropTypes.func,
     skillName: PropTypes.string,
     error: PropTypes.string,
     options: PropTypes.array,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+
 };
 export default SkillItem;

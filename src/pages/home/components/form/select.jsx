@@ -13,9 +13,9 @@ const SelectInput = (props) => {
             <Select
                 id={id}
                 options={options && options.map(item => {
-                    return { label: item.title, value: item.value }
+                    return { label: item.label, value: item.value }
                 })}
-                // value={value}
+                value={value}
                 onChange={(selectedOption) => handleChange(field, selectedOption)}
                 isMulti={isMulti}
                 className="react-select-container"
@@ -32,7 +32,7 @@ SelectInput.propTypes = {
     label: PropTypes.string,
     id: PropTypes.string,
     field: PropTypes.string,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     handleChange: PropTypes.func,
     error: PropTypes.string,
     options: PropTypes.array,

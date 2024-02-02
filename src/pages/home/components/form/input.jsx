@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 
 const Input = (props) => {
 
-    const { type, label, id, field, placeholder, value, handleChange, 
-        error, disabled } = props;
+    const { type, label, id, field, placeholder, value,
+        handleChange, error, disabled } = props;
 
     return (
         <>
@@ -20,7 +20,6 @@ const Input = (props) => {
                 disabled={disabled}
             />
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-
         </>
     );
 };
