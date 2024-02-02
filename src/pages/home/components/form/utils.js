@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+
 export const initialFormState = {
     name: '',
     email: '',
@@ -28,4 +30,12 @@ export const generatePayload = (formData) => {
             node: formData.skills.node
         }
     };
+};
+
+export const showNotification = (type, message) => {
+    if (type === "success") {
+        toast.success(message);
+    } else {
+        toast.error(message);
+    }
 };

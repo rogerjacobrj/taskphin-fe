@@ -2,6 +2,8 @@ import CandidateTable from './components/table';
 import { useState, useEffect } from 'react';
 import customAxios from '../../configs';
 import Modal from './components/modal';
+import { ToastContainer } from 'react-toastify';
+import { showNotification } from './components/form/utils';
 
 const Home = () => {
     const [showModal, setShowModal] = useState(false);
@@ -26,7 +28,7 @@ const Home = () => {
 
             isInitial && setIsLoading(false);
         } catch (error) {
-            console.log(error);
+            showNotification("error", "Failed to fetch candidate list");
             isInitial && setIsLoading(false);
         }
     };
@@ -41,7 +43,7 @@ const Home = () => {
                 setShowModal(true);
             }
         } catch (error) {
-            console.log("error", error);
+            showNotification("error", "Failed to fetch candidate details");
         }
     };
 
@@ -51,9 +53,10 @@ const Home = () => {
 
             if (response && response.status >= 200 && response.status < 300 && response.data.status) {
                 fetchCandidates(false);
+                showNotification("success", "Candidate record deleted");
             }
         } catch (error) {
-            console.log("error", error);
+            showNotification("error", "Failed to delete candidate record");
         }
     };
 
@@ -71,23 +74,38 @@ const Home = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4">Candidate Dashboard</h1>
-            <CandidateTable
-                candidates={candidates}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onAdd={toggleCandidateModal}
-                isLoading={isLoading}
-            />
+        <>
+            <div className="container mx-auto p-4">
+                <h1 className="text-3xl font-bold mb-4">Candidate Dashboard</h1>
+                <CandidateTable
+                    candidates={candidates}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onAdd={toggleCandidateModal}
+                    isLoading={isLoading}
+                />
 
-            {showModal && <Modal
-                onCreate={onCreate}
-                onClose={toggleCandidateModal}
-                candidate={candidate}
-                mode={mode}
-            />}
-        </div>
+                {showModal && <Modal
+                    onCreate={onCreate}
+                    onClose={toggleCandidateModal}
+                    candidate={candidate}
+                    mode={mode}
+                />}
+            </div>
+
+            <ToastContainer
+                position="bottom-left"
+                autoClose={5000}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
+        </>
     );
 };
 

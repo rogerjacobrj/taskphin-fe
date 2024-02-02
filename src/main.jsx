@@ -6,6 +6,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/home';
 
 const router = createBrowserRouter([

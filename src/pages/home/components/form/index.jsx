@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import customAxios from '../../../../configs';
 import { validateDetails } from './validations';
 import { initialErrorState, initialFormState, generatePayload } from './utils';
+import { showNotification } from './utils';
 
 const ApplicantForm = (props) => {
 
@@ -53,30 +54,37 @@ const ApplicantForm = (props) => {
             return;
         }
 
+        let errorMessage = `Failed to ${mode === "create" ? "add" : "update"} candidate record`;
+
         try {
             const payload = generatePayload(formData);
 
             setIsLoading(true);
 
             let response = '';
+            let message = '';
 
             if (mode === "create") {
+                message = 'Added candidate record';
                 response = await customAxios.post('/candidates', payload);
             } else {
+                message = 'Updated candidate record';
                 response = await customAxios.put(`/candidates/${candidate[0].candidateid}`, payload);
             }
 
             if (response && response.status >= 200 && response.status < 300) {
+                showNotification("success", message);
                 onCreate(true);
                 setIsLoading(false);
             } else {
                 onCreate(false);
                 setIsLoading(false);
+                showNotification("error", errorMessage);
             }
         } catch (error) {
-            console.log("Error", error);
             onCreate(false);
             setIsLoading(false);
+            showNotification("error", errorMessage);
         }
     };
 
