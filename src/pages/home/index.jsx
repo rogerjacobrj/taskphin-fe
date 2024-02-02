@@ -35,9 +35,16 @@ const Home = () => {
         console.log(`Edit candidate with ID ${id}`);
     };
 
-    const handleDelete = (id) => {
-        // Implement delete functionality
-        console.log(`Delete candidate with ID ${id}`);
+    const handleDelete = async (id) => {
+        try {
+            const response = await customAxios.delete(`/candidates/${id}`);
+
+            if (response && response.status >= 200 && response.status < 300 && response.data.status) {
+                fetchCandidates(false);
+            }
+        } catch (error) {
+            console.log("error", error);
+        }
     };
 
     const toggleCandidateModal = () => {

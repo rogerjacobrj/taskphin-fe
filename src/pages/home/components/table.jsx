@@ -24,6 +24,9 @@ const CandidateTable = (props) => {
                 </thead>
                 <tbody>
                     {isLoading && <tr><td>Loading...</td></tr>}
+                    {!isLoading && candidates && candidates.length === 0
+                        && <tr><td>No Candidates</td></tr>}
+
                     {candidates.map((item) => (
                         <tr key={item.candidateid}>
                             <td className="border px-4 py-2">{item.candidateid}</td>
