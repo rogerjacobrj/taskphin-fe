@@ -5,29 +5,18 @@ import { skills, status, experience } from '../../../../constants';
 import SkillItem from './skillItem';
 import PropTypes from 'prop-types';
 import customAxios from '../../../../configs';
+import { validateDetails } from './validations';
+import { initialErrorState, initialFormState, generatePayload } from './utils';
 
-const FormPage = (props) => {
+const ApplicantForm = (props) => {
 
     const { onClose, onCreate, candidate, mode } = props;
-    console.log(candidate);
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        salary: '',
-        status: '',
-        skills: {}
-    });
+    const [formData, setFormData] = useState(initialFormState);
 
-    const [formErrors, setFormErrors] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        status: ''
-    });
+    const [formErrors, setFormErrors] = useState(initialErrorState);
 
     const handleChange = (field, value) => {
         if (field === "react" || field === "node") {
@@ -56,50 +45,16 @@ const FormPage = (props) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here
-        // Simple validation
-        let isValid = true;
-        const newFormErrors = {};
 
-        // // Validate Name
-        // if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
-        //     isValid = false;
-        //     newFormErrors.name = 'Name should only contain letters and spaces';
-        // }
+        const { isValid, newFormErrors } = validateDetails(formData);
 
-        // // Validate Email
-        // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // if (!emailRegex.test(formData.email.trim())) {
-        //     isValid = false;
-        //     newFormErrors.email = 'Enter a valid email address';
-        // }
+        if (!isValid) {
+            setFormErrors(newFormErrors);
+            return;
+        }
 
-        // // Validate Phone (Allow only numbers)
-        // if (!/^\d+$/.test(formData.phone.trim())) {
-        //     isValid = false;
-        //     newFormErrors.phone = 'Phone should only contain numbers';
-        // }
-
-        // // Set errors and prevent form submission if validation fails
-        // if (!isValid) {
-        //     setFormErrors(newFormErrors);
-        //     return;
-        // }
-
-        // Handle form submission logic here
-        console.log('Form submitted:', formData);
         try {
-            const payload = {
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone,
-                salary: formData.salary,
-                status: formData.status.value,
-                skills: {
-                    react: formData.skills.react,
-                    node: formData.skills.node
-                }
-            };
+            const payload = generatePayload(formData);
 
             setIsLoading(true);
 
@@ -108,7 +63,7 @@ const FormPage = (props) => {
             if (mode === "create") {
                 response = await customAxios.post('/candidates', payload);
             } else {
-                response = await customAxios.put(`/candidates/${candidate[0].candidateid}`);
+                response = await customAxios.put(`/candidates/${candidate[0].candidateid}`, payload);
             }
 
             if (response && response.status >= 200 && response.status < 300) {
@@ -207,15 +162,17 @@ const FormPage = (props) => {
                             />
                         </div>
                     })}
+
+                    {formErrors.skills && <p className="text-red-500 text-sm mt-1">{formErrors.skills}</p>}
                 </div>
 
                 <div className="mb-4">
                     <Input
                         type="number"
-                        label="Expected Salary"
+                        label="Expected Salary($)"
                         id="salary"
                         field="salary"
-                        placeholder="Enter your expected salary"
+                        placeholder="Enter your expected salary in USD"
                         value={formData.salary}
                         handleChange={handleChange}
                         error={formErrors.salary}
@@ -247,11 +204,11 @@ const FormPage = (props) => {
     );
 };
 
-FormPage.propTypes = {
+ApplicantForm.propTypes = {
     candidate: PropTypes.array,
     onClose: PropTypes.func,
     onCreate: PropTypes.func,
     mode: PropTypes.string,
 };
 
-export default FormPage;
+export default ApplicantForm;

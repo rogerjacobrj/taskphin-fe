@@ -6,7 +6,7 @@ const CandidateTable = (props) => {
 
     return (
         <div className="mt-8">
-            <button className="bg-blue-500 text-white px-4 py-2 mb-4" onClick={onAdd}>
+            <button className="bg-blue-500 text-white px-4 py-2 mb-4 rounded" onClick={onAdd}>
                 Add New Candidate
             </button>
             <table className="min-w-full border border-gray-300">
@@ -23,9 +23,9 @@ const CandidateTable = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {isLoading && <tr><td>Loading...</td></tr>}
+                    {isLoading && <tr><td colSpan={8} className='text-center p-4'>Loading...</td></tr>}
                     {!isLoading && candidates && candidates.length === 0
-                        && <tr><td>No Candidates</td></tr>}
+                        && <tr><td colSpan={8} className='text-center p-4'>No Candidates</td></tr>}
 
                     {candidates.map((item) => (
                         <tr key={item.candidateid}>
@@ -34,19 +34,22 @@ const CandidateTable = (props) => {
                             <td className="border px-4 py-2">{item.email}</td>
                             <td className="border px-4 py-2">{item.phone}</td>
                             <td className="border px-4 py-2">{item.score}</td>
-                            <td className="border px-4 py-2">{item.salary}</td>
+                            <td className="border px-4 py-2">
+                                {Number(item.salary).toLocaleString('en-IN', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                })}
+                            </td>
                             <td className="border px-4 py-2">{item.status}</td>
                             <td className="border px-4 py-2">
                                 <button
-                                    className="bg-yellow-500 text-white px-2 py-1 mr-2"
-                                    onClick={() => onEdit(item.candidateid)}
-                                >
+                                    className="bg-yellow-500 text-white px-2 py-1 mr-2 rounded"
+                                    onClick={() => onEdit(item.candidateid)}>
                                     Edit
                                 </button>
                                 <button
-                                    className="bg-red-500 text-white px-2 py-1"
-                                    onClick={() => onDelete(item.candidateid)}
-                                >
+                                    className="bg-red-500 text-white px-2 py-1 rounded"
+                                    onClick={() => onDelete(item.candidateid)}>
                                     Delete
                                 </button>
                             </td>

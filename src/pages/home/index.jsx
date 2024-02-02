@@ -2,7 +2,6 @@ import CandidateTable from './components/table';
 import { useState, useEffect } from 'react';
 import customAxios from '../../configs';
 import Modal from './components/modal';
-import "./styles.css";
 
 const Home = () => {
     const [showModal, setShowModal] = useState(false);

@@ -5,9 +5,10 @@ import Input from './input';
 import { experience } from '../../../../constants';
 
 const SkillItem = (props) => {
+    
     const [selectOption, setSelectOption] = useState('');
 
-    const { id, field, handleChange, skillName, options, value } = props;
+    const { id, field, handleChange, skillName, options, value, error } = props;
 
     useEffect(() => {
         if (value && value.length > 0) {
@@ -46,9 +47,9 @@ SkillItem.propTypes = {
     field: PropTypes.string,
     handleChange: PropTypes.func,
     skillName: PropTypes.string,
-    error: PropTypes.string,
     options: PropTypes.array,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-
+    error: PropTypes.string,
 };
+
 export default SkillItem;

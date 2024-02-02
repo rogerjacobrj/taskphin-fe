@@ -9,8 +9,6 @@ export const status = [
 export const skills = [
     { field: "react", label: "ReactJS" },
     { field: "node", label: "Node.js" },
-    // { field: "tailwind", label: "Tailwind" },
-    // { field: "digital", label: "Digital Ocean" }
 ];
 
 export const experience = [
